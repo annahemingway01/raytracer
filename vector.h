@@ -10,6 +10,12 @@ typedef struct ray {
     Vector direction;
 } Ray;//for camera ray, origin is 0, direction is pixel it goes thru
 
+Vector normalize(Vector in);
 
+float magnitude(Vector vec);
 
-//void rays_collide(Ray *ray1, Ray *ray2, Vector *location);
+float dot(Vector vec1, Vector vec2);
+
+float cos_angle_between(Vector vec1, Vector vec2);
+
+Vector subtract(Vector vec1, Vector vec2);
