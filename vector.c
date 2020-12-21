@@ -27,3 +27,22 @@ Vector subtract(Vector vec1, Vector vec2) {
     return ret;
 }
 
+Vector multiply_vector_by_scalar(Vector vec, float scalar) {
+    Vector ret;
+    ret.x = scalar * vec.x;
+    ret.y = scalar * vec.y;
+    ret.z = scalar *vec.z;
+    return ret;
+}
+
+Vector add(Vector vec1, Vector vec2) {
+    Vector ret;
+    ret.x = vec1.x + vec2.x;
+    ret.y = vec1.y + vec2.y;
+    ret.z = vec1.z + vec2.z;
+    return ret;
+}
+
+int vector_equal(Vector vec1, Vector vec2) {
+    return vec1.x == vec2.x && vec1.y == vec2.y && vec1.z == vec2.z;
+}

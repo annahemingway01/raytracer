@@ -19,3 +19,9 @@ float dot(Vector vec1, Vector vec2);
 float cos_angle_between(Vector vec1, Vector vec2);
 
 Vector subtract(Vector vec1, Vector vec2);
+
+Vector multiply_vector_by_scalar(Vector vec, float scalar);
+
+Vector add(Vector vec1, Vector vec2);
+
+int vector_equal(Vector vec1, Vector vec2);

@@ -9,4 +9,4 @@ typedef struct color {
 
 Color make_darker(Color color, float percent);
 Color make_lighter(Color color, float percent);
-Color multiply_by_scalar(Color color, float mult);
+Color multiply_color_by_scalar(Color color, float mult);

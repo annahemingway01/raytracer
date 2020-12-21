@@ -13,7 +13,7 @@ Color make_lighter(Color color, float percent) {
     return ret;
 }
 
-Color multiply_by_scalar(Color color, float mult) {
+Color multiply_color_by_scalar(Color color, float mult) {
     Color ret;
     ret.r = CLAMP(0,255,color.r * mult);
     ret.g = CLAMP(0,255,color.g * mult);
