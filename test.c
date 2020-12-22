@@ -1,8 +1,10 @@
 #include<SDL2/SDL.h>
 #include<stdio.h>
+#include <float.h>
 #include "shapes.h"
 #include "view.h"
 #include "color.h"
+#define NUM_SHAPES (3)
 
 
 
@@ -17,14 +19,22 @@ int main(int argc, char *argv[])
     light.intensity = 1;
     //make 2 circles in the scene
     Color red = {255, 0, 0, 255};
-    //Color blue = {0, 0, 255, 255};
-    Vector circ_1_loc = {1000,0, 0};
-    //Vector circ_2_loc = {200, 100, 0};
+    Color blue = {0, 0, 255, 255};
+    Color lavender = {218, 179, 255, 255};
+    Vector circ_1_loc = {800,0, -100};
+    Vector circ_2_loc = {700, 0, 700};
     Data data;
     data.sphere.radius = 300;
+    //make a plane in the scene
+    Vector norm = {0, 1, 0};
+    Vector point = {0, -500, 0};
+    Data plane_data;
+    plane_data.plane.normal = norm;
+    plane_data.plane.point = point;
+    Solid plane = {PLANE, lavender, 0.9, point, plane_data};
     Solid circle_1 = {SPHERE, red, 0.5, circ_1_loc, data};
-    //Solid circle_2 = {SPHERE, blue, default_diffusion, circ_2_loc, data};
-    //Solid solids[2] = {circle_1, circle_2};
+    Solid circle_2 = {SPHERE, blue, 0.8, circ_2_loc, data};
+    Solid solids[NUM_SHAPES] = {plane, circle_1, circle_2};
 
 Vector screen_center = {50, 0, 0};
 Vector screen_top_left = {50, HEIGHT / 2, (-1) * WIDTH / 2};
@@ -52,27 +62,22 @@ Vector camera = {0,0,0};//screen_center - screen_normal
      *viewport is in the y-z plane at an x distance of 50 from the camera.
      */
     Ray camera_ray = {camera, screen_center};
-    /*
-    for (float i = screen_center.z - (WIDTH / 2); i < screen_center.z + (WIDTH / 2); i++) {
-        for (float j = screen_center.y - (HEIGHT / 2); j < screen_center.y + (HEIGHT / 2); j++) {
-    for (float i = screen_top_left.z; i < screen_top_left.z + WIDTH; i++) {
-        for (float j = screen_top_left.y; j > screen_top_left.y - HEIGHT; j--) {
-            //This will not work for long as soon as I implement moving the camera! the camera
-            //must be perpendicular to the viewport. Hence this is rather bad.
-            camera_ray.direction.x = screen_top_left.x;
-            camera_ray.direction.y = j;
-            camera_ray.direction.z = i;
-            */
-            //this is gonna need to be part of a loop to keep track of closest object
     Vector curr_pos = screen_top_left;
+
     for (int i = 0; i < HEIGHT; i++) {
         for (int j = 0; j < WIDTH; j++) {
+            float closest_hit = FLT_MAX;
             camera_ray.direction = curr_pos;
-            Vector location = {0,0,0};
-            if (ray_hit(&camera_ray, &circle_1, &location)) {
-                Color color = multiply_color_by_scalar(circle_1.color, diffuse_brightness(circle_1, location, light));
-                SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, circle_1.color.alpha);
-                SDL_RenderDrawPoint(renderer, j, i);
+            for (int k = 0; k < NUM_SHAPES; k++) {
+                Vector location = {0,0,0};
+                float dist = ray_hit(&camera_ray, &solids[k], &location);
+                if (dist > 0 && dist < closest_hit) {
+                    closest_hit = dist;
+                    Color color = multiply_color_by_scalar(solids[k].color,
+                            diffuse_brightness(solids[k], location, light));
+                    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, solids[k].color.alpha);
+                    SDL_RenderDrawPoint(renderer, j, i);
+                }
             }
             curr_pos = add(curr_pos, right);
         }

@@ -53,8 +53,10 @@ typedef struct solid {
 
 
 
-bool ray_hit(Ray *ray, Solid *solid, Vector *location);
+float ray_hit(Ray *ray, Solid *solid, Vector *location);
 
 Vector get_normal_at(Solid solid, Vector point);
 
 float diffuse_brightness(Solid solid, Vector point, Light light);
+
+Vector reflect(Vector input, Solid solid, Vector point);

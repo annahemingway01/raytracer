@@ -5,11 +5,11 @@
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)<(b))?(b):(a))
 
-bool ray_hit_sphere(Ray *ray, Solid *solid, Vector *location);
-bool ray_hit_plane(Ray *ray, Solid *solid, Vector *location);
+float ray_hit_sphere(Ray *ray, Solid *solid, Vector *location);
+float ray_hit_plane(Ray *ray, Solid *solid, Vector *location);
 
 
-bool ray_hit(Ray *ray, Solid *solid, Vector *location) {
+float ray_hit(Ray *ray, Solid *solid, Vector *location) {
     if (solid->type == SPHERE) {
         return ray_hit_sphere(ray, solid, location);
     } else if (solid->type == PLANE) {
@@ -18,7 +18,7 @@ bool ray_hit(Ray *ray, Solid *solid, Vector *location) {
     return false;
 }
 
-bool ray_hit_sphere(Ray *ray, Solid *solid, Vector *location) {
+float ray_hit_sphere(Ray *ray, Solid *solid, Vector *location) {
     /*
     First: we find parameterizations for the intersection coordinates
     
@@ -41,7 +41,7 @@ bool ray_hit_sphere(Ray *ray, Solid *solid, Vector *location) {
     float d;
     if ((d = pow(b, 2) - 4* a * c) < 0) {
         //location = 0;
-        return false;
+        return 0;
     } else {
         float t_1 = (-1 * b + sqrt(d)) / (2 * a);
         float t_2 = (-1 * b - sqrt(d)) / (2 * a);
@@ -58,19 +58,19 @@ bool ray_hit_sphere(Ray *ray, Solid *solid, Vector *location) {
             t = t_2;
         } else {
             //location = 0;
-            return false;
+            return 0;
         }
         location->x = (1 - t) * ray->origin.x + t * ray->direction.x;
         location->y = (1 - t) * ray->origin.y + t * ray->direction.y;
         location->z = (1 - t) * ray->origin.z + t * ray->direction.z;
-        return true;
+        return t;
     }
-    return false;
+    return 0;
 }
 
 
 
-bool ray_hit_plane(Ray *ray, Solid *solid, Vector *location) {
+float ray_hit_plane(Ray *ray, Solid *solid, Vector *location) {
     /*
      n_x(d_x * t + o_x * (1 - t)- p_x) + ... for y and z = 0
      So we write the constant as n_x(o_x - p_x)
@@ -81,19 +81,19 @@ bool ray_hit_plane(Ray *ray, Solid *solid, Vector *location) {
         + solid->data.plane.normal.z * (ray->origin.z - solid->data.plane.point.z);
     //t can't be negative but can it be less than 1??
     float t;
-    if ((t = d / (solid->data.plane.normal.x * (ray->direction.x - ray->origin.x)
+    if ((t = (-1) * d / (solid->data.plane.normal.x * (ray->direction.x - ray->origin.x)
                     + solid->data.plane.normal.y * (ray->direction.y - ray->origin.y)
                     + solid->data.plane.normal.z * (ray->direction.z - ray->origin.z))) < 0) {
         //location = 0;
-        return false;
+        return 0;
     } else {
         location->x = ray->direction.x * t + ray->origin.x * (1 - t);
         location->y = ray->direction.y * t + ray->origin.y * (1 - t);
         location->z = ray->direction.z * t + ray->origin.z * (1 - t);
-        return true;
+        return t;
     }
 
-    return false;
+    return 0;
 }
 
 Vector get_normal_at(Solid solid, Vector point) {
@@ -120,3 +120,9 @@ float diffuse_brightness(Solid solid, Vector point, Light light) {
 
 }
 
+Vector reflect(Vector input, Solid solid, Vector point) {
+    Vector ret;
+
+
+    return ret;
+}
