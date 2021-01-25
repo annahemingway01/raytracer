@@ -120,9 +120,42 @@ float diffuse_brightness(Solid solid, Vector point, Light light) {
 
 }
 
+
+float specular_brightness(Solid solid, Vector point, Light light) {
+    Vector light_vec = subtract(light.location, point);
+    //Vector light_vec = subtract(point, light.location);
+    Vector normal_to_surface = get_normal_at(solid, point);
+    Vector vec_to_eye = reflect(light_vec, solid, point);
+    Vector h = add(light_vec, vec_to_eye);
+    h = multiply_vector_by_scalar(h, 1 / magnitude(h));
+    return light.intensity * solid.specular_coefficient * MAX(0, dot(normal_to_surface, h));
+}
+
+
 Vector reflect(Vector input, Solid solid, Vector point) {
     Vector ret;
-
-
+    Vector normal = get_normal_at(solid, point);
+    float n = dot(normal, input);
+    n = n * -2;
+    ret = multiply_vector_by_scalar(normal, n);
+    ret = subtract(input, ret);
     return ret;
+}
+
+bool is_shadow(Light light, Solid solids[], int num_solids, Vector point) {
+    //vector from light to point
+    //Vector direction = subtract(point, light.location);
+    Vector direction = subtract(light.location, point);
+    float distance = magnitude(direction);
+    Vector dummy = {0, 0, 0};
+    float new_dist = 0;
+    Ray light_ray = {point, direction};
+    for (int k = 0; k < num_solids; k++) {
+        new_dist = ray_hit(&light_ray, &solids[k], &dummy);
+        if (new_dist > 0.1 && new_dist < distance) {
+            printf("Light:%f, Hit:%f\n", distance, new_dist); 
+            return true;
+        }
+    }
+    return false;
 }

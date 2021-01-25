@@ -46,6 +46,7 @@ typedef struct solid {
     Type type;
     Color color;
     float diffusion_coefficient;
+    float specular_coefficient;
     Vector location;
     Data data;
     //add reflectivity and such later on
@@ -59,4 +60,8 @@ Vector get_normal_at(Solid solid, Vector point);
 
 float diffuse_brightness(Solid solid, Vector point, Light light);
 
+float specular_brightness(Solid solid, Vector point, Light light);
+
 Vector reflect(Vector input, Solid solid, Vector point);
+
+bool is_shadow(Light light, Solid solids[], int num_solids, Vector point);

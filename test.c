@@ -31,9 +31,9 @@ int main(int argc, char *argv[])
     Data plane_data;
     plane_data.plane.normal = norm;
     plane_data.plane.point = point;
-    Solid plane = {PLANE, lavender, 0.9, point, plane_data};
-    Solid circle_1 = {SPHERE, red, 0.5, circ_1_loc, data};
-    Solid circle_2 = {SPHERE, blue, 0.8, circ_2_loc, data};
+    Solid plane = {PLANE, lavender, 0.9, 0.2, point, plane_data};
+    Solid circle_1 = {SPHERE, red, 0.5, 0.5, circ_1_loc, data};
+    Solid circle_2 = {SPHERE, blue, 0.8, 0.5, circ_2_loc, data};
     Solid solids[NUM_SHAPES] = {plane, circle_1, circle_2};
 
 Vector screen_center = {50, 0, 0};
@@ -72,9 +72,18 @@ Vector camera = {0,0,0};//screen_center - screen_normal
                 Vector location = {0,0,0};
                 float dist = ray_hit(&camera_ray, &solids[k], &location);
                 if (dist > 0 && dist < closest_hit) {
+                    //this is the closest object in the screen, so color it whatever color it should be.
                     closest_hit = dist;
+                    //account for diffuse brightness
                     Color color = multiply_color_by_scalar(solids[k].color,
                             diffuse_brightness(solids[k], location, light));
+                    //specular brightness
+                    color = multiply_color_by_scalar(solids[k].color, 
+                            specular_brightness(solids[k], location, light));
+                    //shadow
+                    if (is_shadow(light, solids, NUM_SHAPES, location)) {
+                        color.r = 0; color.g = 0; color.b = 0;
+                    }
                     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, solids[k].color.alpha);
                     SDL_RenderDrawPoint(renderer, j, i);
                 }

@@ -19,6 +19,7 @@ float cos_angle_between(Vector vec1, Vector vec2) {
     return dot(vec1, vec2) / (magnitude(vec1) * magnitude(vec2));
 }
 
+
 Vector subtract(Vector vec1, Vector vec2) {
     Vector ret;
     ret.x = vec1.x - vec2.x;
